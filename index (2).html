@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Para ti 💚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&family=Fraunces:ital,wght@1,600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bosque:#12241a; --cafe:#2a1b12; --musgo:#6f9a58; --luz:#efe6d2; --alma:#ff2d3d; }
+  * { box-sizing:border-box; margin:0; }
+  html,body { height:100%; }
+  body { background:linear-gradient(180deg,var(--cafe),var(--bosque)); color:var(--luz); font-family:"Pixelify Sans","Courier New",monospace; overflow:hidden; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+
+  #inicio { position:fixed; inset:0; z-index:30; background:#050805; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; cursor:pointer; transition:opacity 1.2s; }
+  #inicio.fuera { opacity:0; pointer-events:none; }
+  #inicio p { font-size:1.25rem; letter-spacing:.06em; }
+  #inicio small { color:var(--musgo); }
+  .alma { width:64px; height:58px; animation:latido 1.4s ease-in-out infinite; filter:drop-shadow(0 0 14px var(--alma)); }
+  @keyframes latido { 50% { transform:scale(1.18); } }
+
+  #jardin, #fuegos { position:fixed; inset:0; pointer-events:none; }
+  #jardin { overflow:hidden; }
+  .flor { position:absolute; bottom:-8px; line-height:1; transform-origin:50% 100%; animation:crecer 2.4s cubic-bezier(.2,.9,.3,1.2) forwards, mecer 5s ease-in-out 2.4s infinite alternate; }
+  @keyframes crecer { from { transform:scale(0) translateY(30px); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes mecer { from { transform:rotate(-5deg); } to { transform:rotate(5deg); } }
+
+  #escena { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding:14px; opacity:0; transition:opacity 1.5s; }
+  #escena.visible { opacity:1; }
+
+  #titulo { position:absolute; top:5%; left:0; right:0; text-align:center; padding:0 18px; z-index:5; font-family:"Fraunces",Georgia,serif; font-style:italic; font-weight:600; font-size:clamp(1.7rem,6.4vw,3.4rem); line-height:1.15; text-shadow:0 2px 24px #000; opacity:0; transition:opacity 2s; pointer-events:none; }
+  #titulo.visible { opacity:1; }
+
+  #marco { flex:1; min-height:0; width:min(420px,78vw); margin:56px 0 14px; display:flex; align-items:center; justify-content:center; }
+  #foto { max-width:100%; max-height:100%; object-fit:cover; border:4px solid var(--luz); border-radius:4px; box-shadow:0 0 0 4px #000, 0 10px 40px rgba(0,0,0,.6); transform:rotate(-2deg); transition:opacity .5s, transform .5s; }
+  #foto.cambia { opacity:0; transform:rotate(3deg) scale(.96); }
+
+  #cancion { width:min(680px,100%); margin-bottom:10px; display:block; }
+  #cancion.visible { display:block; }
+  #cancion iframe { width:100%; height:80px; border:0; border-radius:12px; }
+
+  #dialogo { position:relative; width:min(680px,100%); margin-bottom:12px; background:#000; border:4px solid var(--luz); border-radius:4px; padding:18px 22px 24px; min-height:128px; cursor:pointer; font-size:clamp(1.05rem,3.6vw,1.35rem); line-height:1.5; z-index:5; }
+  #dialogo:focus-visible { outline:3px solid var(--musgo); outline-offset:4px; }
+  #texto::before { content:"* "; color:var(--musgo); }
+  .alma-mini { position:absolute; right:14px; bottom:10px; width:18px; animation:latido 1s infinite; opacity:0; }
+  #dialogo.listo .alma-mini { opacity:1; }
+
+  #fondo { position:fixed; inset:0; z-index:-1; background-size:cover; background-position:center; background-repeat:no-repeat; }
+
+  /* Carta */
+  #carta { position:fixed; inset:0; z-index:25; background:radial-gradient(ellipse at center,#1d3a28 0%,#0c160f 100%); display:none; align-items:center; justify-content:center; padding:18px; opacity:0; transition:opacity 1.2s; }
+  #carta.on { display:flex; } #carta.visible { opacity:1; }
+  .carta-wrap { position:relative; width:min(520px,100%); max-height:100%; }
+  .papel { position:relative; z-index:2; max-height:82vh; overflow:auto; background:#efe6d2; color:#3b2a1c; border-radius:6px; padding:30px 28px 26px; box-shadow:0 0 0 4px #8a5a3c, 0 18px 50px rgba(0,0,0,.6); font-family:"Caveat","Segoe Script",cursive; font-weight:500; font-size:clamp(1.25rem,4.4vw,1.6rem); line-height:1.35; }
+  .papel p { margin-bottom:.8em; }
+  .papel .firma { text-align:right; font-weight:700; }
+  .sello { position:absolute; z-index:3; left:50%; top:-22px; transform:translateX(-50%); font-size:2.2rem; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)); }
+  #abrir { display:block; margin:16px auto 0; font:inherit; font-family:"Pixelify Sans",monospace; font-size:1.05rem; background:#000; color:var(--luz); border:3px solid var(--luz); padding:10px 18px; cursor:pointer; }
+  #abrir:hover,#abrir:focus-visible { border-color:var(--musgo); color:var(--musgo); outline:none; }
+  .pk { position:absolute; z-index:1; width:clamp(64px,16vw,120px); height:auto; image-rendering:auto; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation:flota 3.5s ease-in-out infinite alternate; }
+  .pk1 { left:-6%; top:-5%; } .pk2 { right:-6%; top:-5%; animation-delay:.6s; }
+  .pk3 { left:-7%; top:42%; animation-delay:1.1s; } .pk4 { right:-7%; top:42%; animation-delay:.3s; }
+  .pk5 { left:-5%; bottom:-6%; animation-delay:.9s; } .pk6 { right:-5%; bottom:-6%; animation-delay:1.4s; }
+  @keyframes flota { from { transform:translateY(-5px); } to { transform:translateY(6px); } }
+
+  /* Frases laterales */
+  .frase { position:fixed; z-index:4; width:min(24vw,230px); font-family:"Fraunces",Georgia,serif; font-style:italic; font-size:clamp(.95rem,1.8vw,1.3rem); line-height:1.3; text-shadow:0 2px 12px #000; opacity:0; pointer-events:none; animation:frase 6s ease-in-out forwards; }
+  .frase.izq { left:2vw; text-align:left; } .frase.der { right:2vw; text-align:right; }
+  @keyframes frase { 0% { opacity:0; transform:translateY(14px); } 20%,75% { opacity:1; transform:none; } 100% { opacity:0; transform:translateY(-14px); } }
+  @media (max-width:700px) { .frase { width:82vw; left:9vw !important; right:auto !important; text-align:center !important; top:11% !important; font-size:1.05rem; } .pk { width:64px; } }
+
+  @media (prefers-reduced-motion:reduce) { .alma,.alma-mini,.flor { animation-duration:.01s; animation-iteration-count:1; } }
+</style>
+</head>
+<body>
+<div id="fondo" aria-hidden="true"></div>
+
+<div id="inicio" role="button" tabindex="0" aria-label="Presiona para comenzar">
+  <svg class="alma" viewBox="0 0 16 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#ff2d3d" d="M2 0h4v1h1v1h2V1h1V0h4v1h1v5h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1H7v-1H6v-1H5V9H4V8H3V7H2V6H1V1h1z"/></svg>
+  <p>Presiona para comenzar</p>
+  <small>(sube el volumen 💚)</small>
+</div>
+
+<div id="carta" aria-label="Una carta para ti">
+  <div class="carta-wrap">
+    <div id="pokes" aria-hidden="true"></div>
+    <div class="papel">
+      <span class="sello" aria-hidden="true">💚</span>
+      <div id="cartaTexto"></div>
+      <button id="abrir" type="button">Abrir mi regalo</button>
+    </div>
+  </div>
+</div>
+
+<div id="jardin" aria-hidden="true"></div>
+<canvas id="fuegos" aria-hidden="true"></canvas>
+
+<main id="escena">
+  <h1 id="titulo">HAY QUE JUGAR MARVEL RIVALS<br>JUNTOS SIN PARAR 💚</h1>
+  <div id="marco"><img id="foto" src="fotos/foto1.jpg" alt="Tú, mi niño hermoso"></div>
+  <div id="cancion"><div id="spotifyHolder"></div></div>
+  <div id="dialogo" role="button" tabindex="0" aria-live="polite" aria-label="Toca para continuar">
+    <div id="texto"></div>
+    <svg class="alma-mini" viewBox="0 0 16 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#ff2d3d" d="M2 0h4v1h1v1h2V1h1V0h4v1h1v5h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1H7v-1H6v-1H5V9H4V8H3V7H2V6H1V1h1z"/></svg>
+  </div>
+</main>
+
+<script>
+/* =========== CONFIGURACIÓN: edita solo esto =========== */
+const NOMBRE = "Mi principe";   // su nombre o apodo
+const SPOTIFY_TRACK_ID = "2CNObFGxQ6pMdYNjuwCp68";        // ID de la canción (lo que va después de /track/ en el enlace de Spotify)
+
+// Cada mensaje lleva su foto (1 a 5)
+const MENSAJES = [
+  { t:`Hola, ${NOMBRE}. Esta página la hice solo para ti.`, f:1 },
+  { t:"Tus ojos son de esos lugares donde uno quisiera quedarse a vivir.", f:2 },
+  { t:"Me encanta cómo tu cabello cae sobre tu cara y aun así tu mirada se escapa y me encuentra.", f:3 },
+  { t:"Tu rostro es de esos que uno podría mirar todo un día sin aburrirse.", f:4 },
+  { t:"Hasta de verde te ves como si el color hubiera sido inventado para ti.", f:5 },
+  { t:"Eres hermoso por fuera, pero lo más lindo de ti no cabe en ninguna foto.", f:1 },
+  { t:"Eres una persona preciosa: donde llegas, algo florece.", f:2 },
+  { t:"Pase lo que pase, siempre voy a estar para ti.", f:4 },
+  { t:"Que sentido tienen esperar al amanecer, si el sol nunca brillara como tu. 💚", f:5 }
+];
+
+// Carta que se lee antes de entrar (cada línea es un párrafo; la última es la firma)
+const CARTA = [
+  "Para mi niño de ojos hermosos,",
+  "Quería darte algo que no se pudiera envolver en papel, así que hice un pequeño jardín solo para ti.",
+  "Aquí hay cosas que a veces me dan pena decirte de frente: que me encanta tu mirada, contigo me siento en casa, me siento en paz....",
+  "Gracias por ser tú. Abre el regalo y entra a tu jardín.",
+  "Con todo mi cariño 💚"
+];
+
+// IMÁGENES DE POKÉMON alrededor de la carta (hasta 6, en este orden: arriba-izq, arriba-der,
+// medio-izq, medio-der, abajo-izq, abajo-der). Guarda tus PNG en la carpeta "pokemon" y escribe
+// aquí sus nombres. Ejemplo: ["pokemon/bulbasaur.png", "pokemon/eevee.png"]. Vacío = no se muestra nada.
+const IMAGENES_CARTA = ["pokemon/eve.png","pokemon/Mimikyu.png"];
+
+// FONDO DE PANTALLA: guarda tu imagen junto al index.html (ej: fondo.jpg) y escribe su nombre aquí.
+// Vacío = se queda el degradado verde y café. FONDO_OSCURECER (0 a 1) oscurece la imagen para que se lea el texto.
+const FONDO_PANTALLA = "fondo.jpg";
+const FONDO_OSCURECER = 0.45;
+
+// Frases que flotan a los lados mientras suena la canción, cada una en su segundo exacto.
+// t = segundo de la canción en que aparece. Para encontrar los segundos: abre tu página con ?tiempo=1
+// al final del enlace (ej: tuusuario.github.io/regalo/?tiempo=1); se muestra un contador mientras suena.
+// Los textos son míos (no son la letra); cámbialos por tus palabras.
+const FRASES = [
+  { t: 12,  texto: "A las 11:11 mi deseo siempre eres tú" },
+  { t: 28,  texto: "Cada 11:11 te pienso un poquito más" },
+  { t: 45,  texto: "Pedí un deseo y el universo me mandó a tu mirada" },
+  { t: 62,  texto: "Eres el deseo que sí se cumplió" },
+  { t: 80,  texto: "Contigo todo se siente en casa" },
+  { t: 98,  texto: "Aquí estoy, y aquí me quedo" }
+];
+/* ======================================================= */
+
+const $ = id => document.getElementById(id);
+if(FONDO_PANTALLA){ const o=FONDO_OSCURECER; $("fondo").style.backgroundImage=`linear-gradient(rgba(8,14,10,${o}),rgba(8,14,10,${o})), url("${FONDO_PANTALLA}")`; }
+const inicio=$("inicio"), escena=$("escena"), jardin=$("jardin"), titulo=$("titulo"), dialogo=$("dialogo"), texto=$("texto"), foto=$("foto"), cancion=$("cancion"), cv=$("fuegos"), ctx=cv.getContext("2d");
+const flores=["🌸","🌼","🌷","🌻","🌿","🍀","🌺","🌱","🪻"];
+const reducir=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let i=0, escribiendo=false, timer=null, terminado=false, audio=null;
+
+/* ---- Sonido tipo Undertale (se genera, no hay archivos) ---- */
+function blip(grave){
+  if(!audio) return;
+  const o=audio.createOscillator(), g=audio.createGain(), t=audio.currentTime;
+  o.type="square"; o.frequency.value=(grave?190:300)+Math.random()*50;
+  g.gain.setValueAtTime(.018,t); g.gain.exponentialRampToValueAtTime(.001,t+.07);
+  o.connect(g).connect(audio.destination); o.start(t); o.stop(t+.08);
+}
+
+/* ---- Flores: sobre todo a los lados ---- */
+function plantarFlor(centro){
+  const f=document.createElement("span");
+  f.className="flor"; f.textContent=flores[Math.floor(Math.random()*flores.length)];
+  const lado=Math.random()<.5, x=Math.random()*(innerWidth<600?16:20);
+  f.style.left=(centro&&Math.random()<.15 ? Math.random()*94 : lado ? x : 100-x-4)+"vw";
+  f.style.fontSize=24+Math.random()*40+"px";
+  f.style.animationDelay="0s,"+Math.random()*2+"s";
+  jardin.appendChild(f);
+  if(jardin.children.length>110) jardin.firstChild.remove();
+}
+const lluvia=(n,c)=>{ for(let k=0;k<n;k++) setTimeout(()=>plantarFlor(c),k*110); };
+
+/* ---- Fuegos artificiales ---- */
+let chispas=[], fuegosOn=false;
+function ajustar(){ cv.width=innerWidth; cv.height=innerHeight; }
+addEventListener("resize",ajustar); ajustar();
+function explotar(){
+  const x=innerWidth*(.15+Math.random()*.7), y=innerHeight*(.1+Math.random()*.4), h=Math.random()*360;
+  for(let k=0;k<70;k++){ const a=Math.PI*2*k/70, v=1.5+Math.random()*3.5;
+    chispas.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,vida:1,h:h+Math.random()*40}); }
+}
+function pintar(){
+  ctx.globalCompositeOperation="destination-out"; ctx.fillStyle="rgba(0,0,0,.18)"; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.globalCompositeOperation="lighter";
+  chispas=chispas.filter(p=>p.vida>0);
+  for(const p of chispas){ p.x+=p.vx; p.y+=p.vy; p.vy+=.04; p.vx*=.985; p.vida-=.012;
+    ctx.fillStyle=`hsla(${p.h},100%,65%,${p.vida})`; ctx.fillRect(p.x,p.y,3,3); }
+  requestAnimationFrame(pintar);
+}
+function iniciarFuegos(){ if(fuegosOn) return; fuegosOn=true; pintar(); explotar(); setInterval(explotar,900); }
+
+/* ---- Diálogo ---- */
+function cambiarFoto(n){
+  const src="fotos/foto"+n+".jpg"; if(foto.getAttribute("src")===src) return;
+  foto.classList.add("cambia"); setTimeout(()=>{ foto.src=src; foto.classList.remove("cambia"); },400);
+}
+function escribir(m){
+  clearInterval(timer); escribiendo=true; dialogo.classList.remove("listo"); cambiarFoto(m.f);
+  let n=0; texto.textContent="";
+  timer=setInterval(()=>{ n++; texto.textContent=m.t.slice(0,n); if(m.t[n-1]!==" ") blip(false); if(n>=m.t.length) terminar(m); }, reducir?1:34);
+}
+function terminar(m){ clearInterval(timer); texto.textContent=m.t; escribiendo=false; dialogo.classList.add("listo"); }
+
+function avanzar(){
+  if(escribiendo){ terminar(MENSAJES[i]); return; }
+  blip(true);
+  if(i>=MENSAJES.length-1){
+    if(!terminado){ terminado=true; titulo.classList.add("visible"); lluvia(60,true); iniciarFuegos(); }
+    return;
+  }
+  i++; escribir(MENSAJES[i]); lluvia(3);
+}
+
+function comenzar(){
+  if(inicio.classList.contains("fuera")) return;
+  try{ audio=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  inicio.classList.add("fuera");
+  const ct=$("cartaTexto");
+  CARTA.forEach((t,n)=>{ const p=document.createElement("p"); p.textContent=t; if(n===CARTA.length-1) p.className="firma"; ct.appendChild(p); });
+  IMAGENES_CARTA.slice(0,6).forEach((src,n)=>{ if(!src) return; const im=document.createElement("img"); im.src=src; im.alt=""; im.className="pk pk"+(n+1); $("pokes").appendChild(im); });
+  $("carta").classList.add("on"); setTimeout(()=>$("carta").classList.add("visible"),30); cargarCancion();
+}
+
+/* ---- Frases laterales sincronizadas con la canción ---- */
+const CALIBRAR=location.search.includes("tiempo"), vistas=new Set(); let ultimaPos=0;
+const contador=document.createElement("div");
+if(CALIBRAR){ contador.style.cssText="position:fixed;top:8px;left:8px;z-index:60;background:#000;color:#6f9a58;font:1.1rem 'Pixelify Sans',monospace;padding:6px 10px;border:2px solid #efe6d2"; contador.textContent="0.0 s"; document.body.appendChild(contador); }
+let frasesOn=false, fi=0, ftimer=null, izq=true, controlador=false, ctrlSpotify=null, pendientePlay=false;
+function mostrarFrase(txt){
+  const p=document.createElement("div"); p.className="frase "+(izq?"izq":"der"); izq=!izq;
+  p.textContent=txt||FRASES[fi++%FRASES.length].texto; p.style.top=(20+Math.random()*45)+"%";
+  document.body.appendChild(p); setTimeout(()=>p.remove(),6200);
+}
+function iniciarLetras(){ if(frasesOn||!FRASES.length) return; frasesOn=true; mostrarFrase(); ftimer=setInterval(()=>mostrarFrase(),6500); }
+function pausarLetras(){ frasesOn=false; clearInterval(ftimer); }
+function cargarCancion(){
+  if(!SPOTIFY_TRACK_ID) return;
+  cancion.classList.add("visible");
+  window.onSpotifyIframeApiReady=api=>{
+    api.createController($("spotifyHolder"),{uri:"spotify:track:"+SPOTIFY_TRACK_ID,width:"100%",height:80},c=>{
+      controlador=true; ctrlSpotify=c; if(pendientePlay) c.play();
+      c.addListener("playback_update",e=>{
+        const d=e.data, pos=d.position/1000;
+        if(CALIBRAR) contador.textContent=pos.toFixed(1)+" s";
+        if(d.isPaused) return;
+        if(pos<ultimaPos-1) vistas.clear();           // si retrocede, vuelven a salir
+        ultimaPos=pos;
+        FRASES.forEach((f,n)=>{ if(!vistas.has(n)&&pos>=f.t&&pos<f.t+5){ vistas.add(n); mostrarFrase(f.texto); } });
+      });
+    });
+  };
+  const sc=document.createElement("script"); sc.src="https://open.spotify.com/embed/iframe-api/v1"; sc.async=true; document.body.appendChild(sc);
+  setTimeout(()=>{ if(controlador) return;
+    const f=document.createElement("iframe");
+    f.src="https://open.spotify.com/embed/track/"+SPOTIFY_TRACK_ID+"?utm_source=generator&theme=0";
+    f.allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"; f.title="Nuestra canción";
+    $("spotifyHolder").replaceWith(f); setTimeout(iniciarLetras,4000);
+  },5000);
+}
+
+function abrirEscena(){
+  if(escena.classList.contains("visible")) return;
+  $("carta").classList.remove("visible"); setTimeout(()=>$("carta").classList.remove("on"),1200);
+  escena.classList.add("visible"); if(ctrlSpotify) ctrlSpotify.play(); else pendientePlay=true;
+  lluvia(24); setInterval(()=>plantarFlor(),2000);
+  setTimeout(()=>escribir(MENSAJES[0]),1200);
+}
+const tecla=fn=>e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fn(); } };
+inicio.addEventListener("click",comenzar); $("abrir").addEventListener("click",()=>{ blip(true); abrirEscena(); }); inicio.addEventListener("keydown",tecla(comenzar));
+dialogo.addEventListener("click",avanzar); dialogo.addEventListener("keydown",tecla(avanzar));
+</script>
+</body>
+</html>
